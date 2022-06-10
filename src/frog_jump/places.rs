@@ -7,16 +7,6 @@ pub struct Place {
 }
 
 impl Place {
-    pub fn next_places(&self) -> impl Iterator<Item = Place> {
-        let p = *self;
-        ((self.speed - 1).max(0)..(self.speed + 2)).map(move |speed| {
-            let next_position = p.position + speed;
-            Place {
-                position: next_position,
-                speed,
-            }
-        })
-    }
     pub fn next_places_hashmap<'s>(
         &'s self,
         hashed_stones: &'s HashMap<i32, usize>,

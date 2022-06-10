@@ -1,12 +1,8 @@
 use diam::prelude::*;
 use rayon::prelude::*;
 use std::collections::{HashMap, LinkedList};
-use std::io::prelude::*;
 
-use super::{
-    marks::{Marks, ParHashTable, SeqHashTable},
-    places::Place,
-};
+use super::{marks::ParHashTable, places::Place};
 
 pub fn can_cross_par<H: ParHashTable>(stones: &[i32]) -> bool {
     let starting_place = Place {
