@@ -21,18 +21,19 @@ use {
 fn main() {
     let args = AppArgs::new();
     let mut csv_writer = Writer::from_path(args.output_filename()).unwrap();
-    let mut algorithms: Vec<Box<dyn Benchable>> =
-        vec![Box::new(MergeSort::new(8)), Box::new(FrogJump::new())];
+    let mut algorithms = algorithms();
 
     for i in 1..=args.runs() {
         for algorithm in &mut algorithms {
-            let name = algorithm.name();
-
-            println!("Running {} {}/{}", name, i, args.runs());
+            println!("Running {} {}/{}", algorithm.name(), i, args.runs());
             let (cpu_time, energy) = bench(algorithm);
-            save_results(&mut csv_writer, name, cpu_time, energy);
+            save_results(&mut csv_writer, algorithm.name(), cpu_time, energy);
         }
     }
+}
+
+fn algorithms() -> Vec<Box<dyn Benchable>> {
+    vec![Box::new(MergeSort::new(8)), Box::new(FrogJump::new())]
 }
 
 fn bench(algorithm: &mut Box<dyn Benchable>) -> (CpuTimeBencher, EnergyBencher) {
