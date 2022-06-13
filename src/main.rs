@@ -19,6 +19,9 @@ use nbody::{NBodyParIter, NBodyParReduce, NBodySeq};
 mod quicksort;
 use quicksort::QuickSort;
 
+mod tsp;
+use tsp::Tsp;
+
 mod app_args;
 use app_args::AppArgs;
 
@@ -52,6 +55,7 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
         Box::new(NBodyParReduce::new()),
         Box::new(NBodySeq::new()),
         Box::new(QuickSort::new()),
+        Box::new(Tsp::new()),
     ]
 }
 
