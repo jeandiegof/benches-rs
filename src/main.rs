@@ -10,6 +10,9 @@ use bench_record::BenchRecord;
 mod frog_jump;
 use frog_jump::FrogJump;
 
+mod life;
+use life::{LifeParBridge, LifeParIter, LifeSeq};
+
 mod app_args;
 use app_args::AppArgs;
 
@@ -33,7 +36,13 @@ fn main() {
 }
 
 fn algorithms() -> Vec<Box<dyn Benchable>> {
-    vec![Box::new(MergeSort::new(8)), Box::new(FrogJump::new())]
+    vec![
+        Box::new(MergeSort::new(8)),
+        Box::new(FrogJump::new()),
+        Box::new(LifeSeq::new()),
+        Box::new(LifeParIter::new()),
+        Box::new(LifeParBridge::new()),
+    ]
 }
 
 fn bench(algorithm: &mut Box<dyn Benchable>) -> (CpuTimeBencher, EnergyBencher) {
