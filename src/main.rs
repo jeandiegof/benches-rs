@@ -13,6 +13,9 @@ use frog_jump::FrogJump;
 mod life;
 use life::{LifeParBridge, LifeParIter, LifeSeq};
 
+mod nbody;
+use nbody::{NBodyParIter, NBodyParReduce, NBodySeq};
+
 mod app_args;
 use app_args::AppArgs;
 
@@ -42,6 +45,9 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
         Box::new(LifeSeq::new()),
         Box::new(LifeParIter::new()),
         Box::new(LifeParBridge::new()),
+        Box::new(NBodyParIter::new()),
+        Box::new(NBodyParReduce::new()),
+        Box::new(NBodySeq::new()),
     ]
 }
 
