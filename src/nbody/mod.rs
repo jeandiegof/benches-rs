@@ -13,7 +13,7 @@ pub struct NBodySeq {
 
 impl NBodySeq {
     pub fn new() -> Self {
-        let mut rng = seeded_rng();
+        let mut rng = crate::seeded_rng();
         let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
 
         Self { nbody_benchmark }
@@ -38,7 +38,7 @@ pub struct NBodyParIter {
 
 impl NBodyParIter {
     pub fn new() -> Self {
-        let mut rng = seeded_rng();
+        let mut rng = crate::seeded_rng();
         let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
 
         Self { nbody_benchmark }
@@ -63,7 +63,7 @@ pub struct NBodyParReduce {
 
 impl NBodyParReduce {
     pub fn new() -> Self {
-        let mut rng = seeded_rng();
+        let mut rng = crate::seeded_rng();
         let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
 
         Self { nbody_benchmark }
@@ -80,12 +80,4 @@ impl Benchable for NBodyParReduce {
             self.nbody_benchmark.tick_par_reduce();
         }
     }
-}
-
-fn seeded_rng() -> rand_xorshift::XorShiftRng {
-    use rand::SeedableRng;
-    use rand_xorshift::XorShiftRng;
-    let mut seed = <XorShiftRng as SeedableRng>::Seed::default();
-    (0..).zip(seed.as_mut()).for_each(|(i, x)| *x = i);
-    XorShiftRng::from_seed(seed)
 }

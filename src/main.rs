@@ -16,6 +16,9 @@ use life::{LifeParBridge, LifeParIter, LifeSeq};
 mod nbody;
 use nbody::{NBodyParIter, NBodyParReduce, NBodySeq};
 
+mod quicksort;
+use quicksort::QuickSort;
+
 mod app_args;
 use app_args::AppArgs;
 
@@ -48,6 +51,7 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
         Box::new(NBodyParIter::new()),
         Box::new(NBodyParReduce::new()),
         Box::new(NBodySeq::new()),
+        Box::new(QuickSort::new()),
     ]
 }
 
@@ -69,4 +73,12 @@ fn save_results<W: std::io::Write>(
 ) {
     let record = BenchRecord::new(name.to_string(), cpu_time, energy);
     writer.serialize(record).unwrap();
+}
+
+pub fn seeded_rng() -> rand_xorshift::XorShiftRng {
+    use rand::SeedableRng;
+    use rand_xorshift::XorShiftRng;
+    let mut seed = <XorShiftRng as SeedableRng>::Seed::default();
+    (0..).zip(seed.as_mut()).for_each(|(i, x)| *x = i);
+    XorShiftRng::from_seed(seed)
 }
