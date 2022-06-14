@@ -1,4 +1,4 @@
-use {crate::benchable::Benchable, itertools::Itertools, std::iter};
+use {itertools::Itertools, pinscher::Benchable, std::iter};
 
 pub struct MergeSort {
     levels: usize,

@@ -1,6 +1,3 @@
-mod benchable;
-use benchable::Benchable;
-
 mod merge_sort;
 use merge_sort::MergeSort;
 
@@ -27,15 +24,15 @@ use app_args::AppArgs;
 
 use {
     csv::Writer,
-    pinscher::{BenchSuite, CpuTimeBencher, EnergyBencher},
+    pinscher::{BenchSuite, Benchable, CpuTimeBencher, EnergyBencher},
 };
 
 fn main() {
     let args = AppArgs::new();
     let mut csv_writer = Writer::from_path(args.output_filename()).unwrap();
-    let mut algorithms = algorithms();
 
     for i in 1..=args.runs() {
+        let mut algorithms = algorithms();
         for algorithm in &mut algorithms {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
             let (cpu_time, energy) = bench(algorithm);
@@ -59,12 +56,15 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
     ]
 }
 
-fn bench(algorithm: &mut Box<dyn Benchable>) -> (CpuTimeBencher, EnergyBencher) {
+fn bench<T>(algorithm: &mut T) -> (CpuTimeBencher, EnergyBencher)
+where
+    T: Benchable,
+{
     let mut cpu_time_bencher = CpuTimeBencher::new();
-    BenchSuite::bench(|| algorithm.execute(), &mut cpu_time_bencher).unwrap();
+    BenchSuite::bench(algorithm, &mut cpu_time_bencher).unwrap();
 
     let mut energy_bencher = EnergyBencher::new().unwrap();
-    BenchSuite::bench(|| algorithm.execute(), &mut energy_bencher).unwrap();
+    BenchSuite::bench(algorithm, &mut energy_bencher).unwrap();
 
     (cpu_time_bencher, energy_bencher)
 }

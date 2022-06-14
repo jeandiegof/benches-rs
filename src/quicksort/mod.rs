@@ -5,11 +5,14 @@ use crate::Benchable;
 
 const BENCH_SIZE: usize = 250_000_000 / 512;
 
-pub struct QuickSort;
+pub struct QuickSort {
+    data: Vec<u32>,
+}
 
 impl QuickSort {
     pub fn new() -> Self {
-        Self
+        let data = default_vec(BENCH_SIZE);
+        Self { data }
     }
 }
 
@@ -18,19 +21,16 @@ impl Benchable for QuickSort {
         "QuickSort"
     }
 
-    fn execute(&mut self) {
-        // TODO: the creation of the data to be sorted shouldn't be
-        // inside the `execute` function. If it is, the time taken
-        // to create the vector will be taken into account during the
-        // benchmarking.
-        // For some reason, when I create the vector inside the `new()`
-        // and try to store in a field of the QuickSort struct, I get
-        // a stack overflow which I don't understand why, since the
-        // Vector should be allocated in the heap and we are only
-        // passing the reference around
+    fn setup(&mut self) {
+        self.data = default_vec(BENCH_SIZE);
+    }
 
-        let mut data = default_vec(BENCH_SIZE);
-        quick_sort::<Parallel, u32>(&mut data[..]);
+    fn execute(&mut self) {
+        quick_sort::<Parallel, u32>(&mut self.data);
+    }
+
+    fn teardown(self: &mut QuickSort) {
+        assert!(&self.data.windows(2).all(|w| w[0] <= w[1]))
     }
 }
 
