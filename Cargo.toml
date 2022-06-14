@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pinscher = { path = "../pinscher" }
+pinscher = { git = "https://github.com/jeandiegof/pinscher", tag = "0.1.0"}
 rayon = { path = "../rayon-fork" }
 diam = { path = "../diam" }
 csv = "1.1.6"

@@ -435,6 +435,7 @@ checksum = "e0a7ae3ac2f1173085d398531c705756c94a4c56843785df85a60c1a0afac116"
 [[package]]
 name = "pinscher"
 version = "0.1.0"
+source = "git+https://github.com/jeandiegof/pinscher?tag=0.1.0#ada1eab596faca144bbd2da2a794a5d13c0eea5c"
 dependencies = [
  "cpu-time",
  "powercap",
