@@ -75,7 +75,9 @@ fn save_results<W: std::io::Write>(
     cpu_time: CpuTimeBencher,
     energy: EnergyBencher,
 ) {
-    let record = BenchRecord::new(name.to_string(), cpu_time, energy);
+    let name = name.to_string();
+    let hostname = sys_info::hostname().unwrap_or("unknown".to_string());
+    let record = BenchRecord::new(name, hostname, cpu_time, energy);
     writer.serialize(record).unwrap();
 }
 

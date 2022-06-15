@@ -6,6 +6,9 @@ pub struct BenchRecord {
     /// name of the algorithm
     name: String,
 
+    /// id of the machine used to perform the experiment
+    machine_id: String,
+
     /// CPU active time in micro seconds
     cpu_time_us: u128,
 
@@ -17,13 +20,19 @@ pub struct BenchRecord {
 }
 
 impl BenchRecord {
-    pub fn new(name: String, cpu_time: CpuTimeBencher, energy: EnergyBencher) -> Self {
+    pub fn new(
+        name: String,
+        machine_id: String,
+        cpu_time: CpuTimeBencher,
+        energy: EnergyBencher,
+    ) -> Self {
         let cpu_time_us = cpu_time.cpu_time().unwrap().as_micros();
         let package_energy = energy.package_energy();
         let core_energy = energy.core_energy();
 
         Self {
             name,
+            machine_id,
             cpu_time_us,
             package_energy,
             core_energy,
