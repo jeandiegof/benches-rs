@@ -5,7 +5,7 @@ set -x
 REF_BRANCH=master
 NEW_ALGORITHM_BRANCH=new-algorithm
 BENCHES_DIR=`pwd`
-RAYON_PATH='$BENCHES_DIR/../rayon-fork'
+RAYON_PATH=$BENCHES_DIR/../rayon-fork
 RUNS=50
 
 # build_benches branch-name
