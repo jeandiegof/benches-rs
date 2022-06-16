@@ -6,10 +6,10 @@ pub struct MergeSort {
 }
 
 impl MergeSort {
-    pub fn new(levels: usize) -> Self {
-        const N: usize = 100_000_000;
+    const N: usize = 100_000_000;
 
-        let input: Vec<u64> = iter::repeat_with(rand::random).take(N).collect();
+    pub fn new(levels: usize) -> Self {
+        let input = Self::input();
 
         Self { levels, input }
     }
@@ -42,6 +42,10 @@ impl MergeSort {
                 .for_each(|(input_element, output_element)| *input_element = *output_element)
         }
     }
+
+    fn input() -> Vec<u64> {
+        iter::repeat_with(rand::random).take(Self::N).collect()
+    }
 }
 
 impl Benchable for MergeSort {
@@ -49,8 +53,16 @@ impl Benchable for MergeSort {
         "MergeSort"
     }
 
+    fn setup(&mut self) {
+        self.input = Self::input()
+    }
+
     fn execute(&mut self) {
         self.sort();
         assert!(self.input.windows(2).all(|w| w[0] <= w[1]));
+    }
+
+    fn teardown(&mut self) {
+        assert!(self.input.windows(2).all(|e| e[0] <= e[1]))
     }
 }
