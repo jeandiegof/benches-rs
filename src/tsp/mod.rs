@@ -29,7 +29,7 @@ const FROM: usize = 0;
 impl Tsp {
     pub fn new() -> Self {
         let path = Path::new("data/tsp/dj10.tsp");
-        let graph = parse_solver(path).unwrap();
+        let graph = parse_graph(path).unwrap();
 
         assert!(FROM < graph.num_nodes());
 
@@ -48,7 +48,7 @@ impl Benchable for Tsp {
     }
 }
 
-fn parse_solver(datafile: &Path) -> Result<Graph, Box<dyn Error>> {
+fn parse_graph(datafile: &Path) -> Result<Graph, Box<dyn Error>> {
     let mut file = File::open(datafile)?;
     let mut text = String::new();
     file.read_to_string(&mut text)?;
