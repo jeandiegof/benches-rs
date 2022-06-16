@@ -6,12 +6,12 @@ use crate::Benchable;
 const BENCH_SIZE: usize = 250_000_000 / 512;
 
 pub struct QuickSort {
-    data: Vec<u32>,
+    data: Option<Vec<u32>>,
 }
 
 impl QuickSort {
     pub fn new() -> Self {
-        let data = default_vec(BENCH_SIZE);
+        let data = None;
         Self { data }
     }
 }
@@ -22,15 +22,23 @@ impl Benchable for QuickSort {
     }
 
     fn setup(&mut self) {
-        self.data = default_vec(BENCH_SIZE);
+        self.data.replace(default_vec(BENCH_SIZE));
     }
 
     fn execute(&mut self) {
-        quick_sort::<Parallel, u32>(&mut self.data);
+        if let Some(data) = self.data.as_mut() {
+            quick_sort::<Parallel, u32>(data);
+        } else {
+            panic!();
+        }
     }
 
     fn teardown(self: &mut QuickSort) {
-        assert!(&self.data.windows(2).all(|w| w[0] <= w[1]))
+        if let Some(data) = self.data.as_mut() {
+            assert!(data.windows(2).all(|w| w[0] <= w[1]))
+        } else {
+            panic!();
+        }
     }
 }
 
