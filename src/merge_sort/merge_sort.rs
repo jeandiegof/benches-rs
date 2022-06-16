@@ -15,14 +15,13 @@ impl MergeSort {
     }
 
     fn sort(&mut self) {
-        let mut input = self.input.take().unwrap();
+        let mut input = self.input.as_mut().unwrap();
 
         let mut buffer: Vec<u64> = iter::repeat_with(Default::default)
             .take(input.len())
             .collect();
 
         Self::inner_merge_sort((&mut input, &mut buffer), self.levels);
-        self.input.replace(input);
     }
 
     /// pre-condition: we need an even number of levels
