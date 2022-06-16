@@ -1,10 +1,14 @@
 use {super::Board, crate::Benchable};
 
-pub struct LifeSeq;
+pub struct LifeSeq {
+    board: Option<Board>,
+}
 
 impl LifeSeq {
     pub fn new() -> Self {
-        Self {}
+        let board = None;
+
+        Self { board }
     }
 }
 
@@ -13,16 +17,25 @@ impl Benchable for LifeSeq {
         "Life - sequential generation"
     }
 
+    fn setup(&mut self) {
+        self.board.replace(Board::new(200, 200).random());
+    }
+
     fn execute(&mut self) {
-        super::generations(Board::new(200, 200).random(), 100);
+        let board = self.board.take().unwrap();
+        super::generations(board, 100);
     }
 }
 
-pub struct LifeParIter;
+pub struct LifeParIter {
+    board: Option<Board>,
+}
 
 impl LifeParIter {
     pub fn new() -> Self {
-        Self {}
+        let board = None;
+
+        Self { board }
     }
 }
 
@@ -31,16 +44,25 @@ impl Benchable for LifeParIter {
         "Life - parallel iterators generation"
     }
 
+    fn setup(&mut self) {
+        self.board.replace(Board::new(200, 200).random());
+    }
+
     fn execute(&mut self) {
-        super::parallel_generations(Board::new(200, 200).random(), 100)
+        let board = self.board.take().unwrap();
+        super::parallel_generations(board, 100)
     }
 }
 
-pub struct LifeParBridge;
+pub struct LifeParBridge {
+    board: Option<Board>,
+}
 
 impl LifeParBridge {
     pub fn new() -> Self {
-        Self {}
+        let board = None;
+
+        Self { board }
     }
 }
 
@@ -49,7 +71,12 @@ impl Benchable for LifeParBridge {
         "Life - parallel bridge generation"
     }
 
+    fn setup(&mut self) {
+        self.board.replace(Board::new(200, 200).random());
+    }
+
     fn execute(&mut self) {
-        super::par_bridge_generations(Board::new(200, 200).random(), 100)
+        let board = self.board.take().unwrap();
+        super::par_bridge_generations(board, 100)
     }
 }
