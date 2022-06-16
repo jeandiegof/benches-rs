@@ -2,24 +2,27 @@ use {itertools::Itertools, pinscher::Benchable, std::iter};
 
 pub struct MergeSort {
     levels: usize,
-    input: Vec<u64>,
+    input: Option<Vec<u64>>,
 }
 
 impl MergeSort {
     const N: usize = 100_000_000;
 
     pub fn new(levels: usize) -> Self {
-        let input = Self::input();
+        let input = None;
 
         Self { levels, input }
     }
 
     fn sort(&mut self) {
+        let mut input = self.input.take().unwrap();
+
         let mut buffer: Vec<u64> = iter::repeat_with(Default::default)
-            .take(self.input.len())
+            .take(input.len())
             .collect();
 
-        Self::inner_merge_sort((&mut self.input, &mut buffer), self.levels)
+        Self::inner_merge_sort((&mut input, &mut buffer), self.levels);
+        self.input.replace(input);
     }
 
     /// pre-condition: we need an even number of levels
@@ -54,15 +57,15 @@ impl Benchable for MergeSort {
     }
 
     fn setup(&mut self) {
-        self.input = Self::input()
+        self.input.replace(Self::input());
     }
 
     fn execute(&mut self) {
         self.sort();
-        assert!(self.input.windows(2).all(|w| w[0] <= w[1]));
     }
 
     fn teardown(&mut self) {
-        assert!(self.input.windows(2).all(|e| e[0] <= e[1]))
+        let input = self.input.take().unwrap();
+        assert!(input.windows(2).all(|e| e[0] <= e[1]))
     }
 }
