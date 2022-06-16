@@ -8,13 +8,12 @@ const BENCH_BODIES: usize = 1000;
 const BENCH_TICKS: usize = 10;
 
 pub struct NBodySeq {
-    nbody_benchmark: NBodyBenchmark,
+    nbody_benchmark: Option<NBodyBenchmark>,
 }
 
 impl NBodySeq {
     pub fn new() -> Self {
-        let mut rng = crate::seeded_rng();
-        let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
+        let nbody_benchmark = None;
 
         Self { nbody_benchmark }
     }
@@ -25,21 +24,26 @@ impl Benchable for NBodySeq {
         "NBody sequential"
     }
 
+    fn setup(&mut self) {
+        let mut rng = crate::seeded_rng();
+        self.nbody_benchmark
+            .replace(NBodyBenchmark::new(BENCH_BODIES, &mut rng));
+    }
+
     fn execute(&mut self) {
         for _ in 0..BENCH_TICKS {
-            self.nbody_benchmark.tick_seq();
+            self.nbody_benchmark.as_mut().unwrap().tick_seq();
         }
     }
 }
 
 pub struct NBodyParIter {
-    nbody_benchmark: NBodyBenchmark,
+    nbody_benchmark: Option<NBodyBenchmark>,
 }
 
 impl NBodyParIter {
     pub fn new() -> Self {
-        let mut rng = crate::seeded_rng();
-        let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
+        let nbody_benchmark = None;
 
         Self { nbody_benchmark }
     }
@@ -50,21 +54,26 @@ impl Benchable for NBodyParIter {
         "NBody parallel iterator"
     }
 
+    fn setup(&mut self) {
+        let mut rng = crate::seeded_rng();
+        self.nbody_benchmark
+            .replace(NBodyBenchmark::new(BENCH_BODIES, &mut rng));
+    }
+
     fn execute(&mut self) {
         for _ in 0..BENCH_TICKS {
-            self.nbody_benchmark.tick_par();
+            self.nbody_benchmark.as_mut().unwrap().tick_par();
         }
     }
 }
 
 pub struct NBodyParReduce {
-    nbody_benchmark: NBodyBenchmark,
+    nbody_benchmark: Option<NBodyBenchmark>,
 }
 
 impl NBodyParReduce {
     pub fn new() -> Self {
-        let mut rng = crate::seeded_rng();
-        let nbody_benchmark = NBodyBenchmark::new(BENCH_BODIES, &mut rng);
+        let nbody_benchmark = None;
 
         Self { nbody_benchmark }
     }
@@ -75,9 +84,15 @@ impl Benchable for NBodyParReduce {
         "NBody parallel reduce"
     }
 
+    fn setup(&mut self) {
+        let mut rng = crate::seeded_rng();
+        self.nbody_benchmark
+            .replace(NBodyBenchmark::new(BENCH_BODIES, &mut rng));
+    }
+
     fn execute(&mut self) {
         for _ in 0..BENCH_TICKS {
-            self.nbody_benchmark.tick_par_reduce();
+            self.nbody_benchmark.as_mut().unwrap().tick_par_reduce();
         }
     }
 }
