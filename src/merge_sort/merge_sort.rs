@@ -6,7 +6,7 @@ pub struct MergeSort {
 }
 
 impl MergeSort {
-    const N: usize = 100_000_000;
+    const N: usize = 250_000_000 / 512;
 
     pub fn new(levels: usize) -> Self {
         let input = None;
