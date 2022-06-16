@@ -9,14 +9,22 @@ pub struct FrogJump {
 
 impl FrogJump {
     pub fn new() -> Self {
-        let stones = inputs::trap(2000, 8);
+        let stones = Self::input();
         Self { stones }
+    }
+
+    fn input() -> Vec<i32> {
+        inputs::trap(2000, 8)
     }
 }
 
 impl Benchable for FrogJump {
     fn name(&self) -> &'static str {
         "FrogJump"
+    }
+
+    fn setup(&mut self) {
+        self.stones = Self::input()
     }
 
     fn execute(&mut self) {
