@@ -4,12 +4,12 @@ use {
 };
 
 pub struct FrogJump {
-    stones: Vec<i32>,
+    stones: Option<Vec<i32>>,
 }
 
 impl FrogJump {
     pub fn new() -> Self {
-        let stones = Self::input();
+        let stones = None;
         Self { stones }
     }
 
@@ -24,10 +24,11 @@ impl Benchable for FrogJump {
     }
 
     fn setup(&mut self) {
-        self.stones = Self::input()
+        self.stones.replace(Self::input());
     }
 
     fn execute(&mut self) {
-        can_cross_par::<scc::HashSet<(usize, i32)>>(&self.stones);
+        let stones = self.stones.take().unwrap();
+        can_cross_par::<scc::HashSet<(usize, i32)>>(&stones);
     }
 }
