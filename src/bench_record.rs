@@ -1,4 +1,4 @@
-use pinscher::{CpuTimeBencher, EnergyBencher};
+use pinscher::AllBenchers;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -12,6 +12,9 @@ pub struct BenchRecord {
     /// CPU active time in micro seconds
     cpu_time_us: u128,
 
+    /// Wall clock time
+    wall_clock_time_us: u128,
+
     /// Package energy in micro Joules
     package_energy: u64,
 
@@ -20,20 +23,21 @@ pub struct BenchRecord {
 }
 
 impl BenchRecord {
-    pub fn new(
-        name: String,
-        machine_id: String,
-        cpu_time: CpuTimeBencher,
-        energy: EnergyBencher,
-    ) -> Self {
-        let cpu_time_us = cpu_time.cpu_time().unwrap().as_micros();
-        let package_energy = energy.package_energy();
-        let core_energy = energy.core_energy();
+    pub fn new(name: String, machine_id: String, all_benchers: AllBenchers) -> Self {
+        let cpu_time_bencher = all_benchers.cpu_time_bencher();
+        let time_bencher = all_benchers.time_bencher();
+        let energy_bencher = all_benchers.energy_bencher();
+
+        let cpu_time_us = cpu_time_bencher.cpu_time().unwrap().as_micros();
+        let wall_clock_time_us = time_bencher.real_time().unwrap().as_micros();
+        let package_energy = energy_bencher.package_energy();
+        let core_energy = energy_bencher.core_energy();
 
         Self {
             name,
             machine_id,
             cpu_time_us,
+            wall_clock_time_us,
             package_energy,
             core_energy,
         }

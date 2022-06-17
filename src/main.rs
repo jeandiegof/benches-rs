@@ -24,7 +24,7 @@ use app_args::AppArgs;
 
 use {
     csv::Writer,
-    pinscher::{BenchSuite, Benchable, CpuTimeBencher, EnergyBencher},
+    pinscher::{AllBenchers, BenchSuite, Benchable},
 };
 
 fn main() {
@@ -35,8 +35,8 @@ fn main() {
         let mut algorithms = algorithms();
         for algorithm in &mut algorithms {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
-            let (cpu_time, energy) = bench(algorithm);
-            save_results(&mut csv_writer, algorithm.name(), cpu_time, energy);
+            let bench_results = bench(algorithm);
+            save_results(&mut csv_writer, algorithm.name(), bench_results);
         }
     }
 }
@@ -56,28 +56,20 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
     ]
 }
 
-fn bench<T>(algorithm: &mut T) -> (CpuTimeBencher, EnergyBencher)
+fn bench<T>(algorithm: &mut T) -> AllBenchers
 where
     T: Benchable,
 {
-    let mut cpu_time_bencher = CpuTimeBencher::new();
-    BenchSuite::bench(algorithm, &mut cpu_time_bencher).unwrap();
+    let mut all_benchers = AllBenchers::new().unwrap();
+    BenchSuite::bench(algorithm, &mut all_benchers).unwrap();
 
-    let mut energy_bencher = EnergyBencher::new().unwrap();
-    BenchSuite::bench(algorithm, &mut energy_bencher).unwrap();
-
-    (cpu_time_bencher, energy_bencher)
+    all_benchers
 }
 
-fn save_results<W: std::io::Write>(
-    writer: &mut Writer<W>,
-    name: &str,
-    cpu_time: CpuTimeBencher,
-    energy: EnergyBencher,
-) {
+fn save_results<W: std::io::Write>(writer: &mut Writer<W>, name: &str, all_benchers: AllBenchers) {
     let name = name.to_string();
     let hostname = sys_info::hostname().unwrap_or("unknown".to_string());
-    let record = BenchRecord::new(name, hostname, cpu_time, energy);
+    let record = BenchRecord::new(name, hostname, all_benchers);
     writer.serialize(record).unwrap();
 }
 
