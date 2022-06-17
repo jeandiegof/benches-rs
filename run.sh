@@ -24,7 +24,7 @@ prepare_binaries () {
 }
 
 bench () {  
-  for i in {{1..9},{10..99..10},{100..1000..100}};
+  for i in {{1..9},{10..99..10},{100..1000..100},{2000..10000..1000}};
   do
     run $i $NEW_ALGORITHM_BRANCH $NEW_ALGORITHM_BRANCH-$i-us.csv
     if [[ $i -eq 50 ]]
