@@ -1,28 +1,16 @@
-mod merge_sort;
-use merge_sort::MergeSort;
-
-mod bench_record;
-use bench_record::BenchRecord;
-
-mod frog_jump;
-use frog_jump::FrogJump;
-
-mod life;
-use life::{LifeParBridge, LifeParIter, LifeSeq};
-
-mod nbody;
-use nbody::{NBodyParIter, NBodyParReduce, NBodySeq};
-
-mod quicksort;
-use quicksort::QuickSort;
-
-mod tsp;
-use tsp::Tsp;
-
+mod algorithms;
 mod app_args;
-use app_args::AppArgs;
+mod bench_record;
+mod benchable_ext;
+pub use benchable_ext::BenchableExt;
 
 use {
+    algorithms::{
+        FrogJump, LifeParIter, LifeSeq, MergeSort, NBodyParIter, NBodyParReduce, NBodySeq,
+        QuickSort, Tsp,
+    },
+    app_args::AppArgs,
+    bench_record::BenchRecord,
     csv::Writer,
     pinscher::{AllBenchers, BenchSuite, Benchable},
 };
@@ -33,6 +21,7 @@ fn main() {
 
     for i in 1..=args.runs() {
         let mut algorithms = algorithms();
+
         for algorithm in &mut algorithms {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
             let bench_results = bench(algorithm);
