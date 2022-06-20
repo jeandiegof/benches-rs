@@ -14,7 +14,7 @@ build_benches () {
   cd $BENCHES_DIR && cargo clean
 
   cargo build --release
-  cp ./target/release/benches $BENCHES_DIR/$1
+  cp ./target/release/benchmarks $BENCHES_DIR/$1
 }
 
 # prepare_binaries branch1 branch2
