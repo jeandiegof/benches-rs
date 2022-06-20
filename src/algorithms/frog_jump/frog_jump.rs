@@ -1,6 +1,8 @@
 use {
     super::{inputs, search::can_cross_par},
-    crate::Benchable,
+    crate::BenchableExt,
+    pinscher::Benchable,
+    std::thread,
 };
 
 pub struct FrogJump {
@@ -8,6 +10,8 @@ pub struct FrogJump {
 }
 
 impl FrogJump {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 23;
+
     pub fn new() -> Self {
         let stones = None;
         Self { stones }
@@ -30,5 +34,13 @@ impl Benchable for FrogJump {
     fn execute(&mut self) {
         let stones = self.stones.take().unwrap();
         can_cross_par::<scc::HashSet<(usize, i32)>>(&stones);
+    }
+}
+
+impl BenchableExt for FrogJump {
+    fn execution_threads(&self) -> usize {
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
