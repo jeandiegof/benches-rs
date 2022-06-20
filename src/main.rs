@@ -6,8 +6,8 @@ pub use benchable_ext::BenchableExt;
 
 use {
     algorithms::{
-        FrogJump, LifeParIter, LifeSeq, MergeSort, NBodyParIter, NBodyParReduce, NBodySeq,
-        QuickSort, Tsp,
+        FrogJump, LifeParBridge, LifeParIter, LifeSeq, MergeSort, NBodyParIter, NBodyParReduce,
+        NBodySeq, QuickSort, Tsp,
     },
     app_args::AppArgs,
     bench_record::BenchRecord,
@@ -36,6 +36,7 @@ fn algorithms() -> Vec<Box<dyn Benchable>> {
         Box::new(FrogJump::new()),
         Box::new(LifeSeq::new()),
         Box::new(LifeParIter::new()),
+        Box::new(LifeParBridge::new()),
         Box::new(NBodyParIter::new()),
         Box::new(NBodyParReduce::new()),
         Box::new(NBodySeq::new()),

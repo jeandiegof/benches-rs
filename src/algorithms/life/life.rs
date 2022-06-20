@@ -1,6 +1,7 @@
 use {
     super::Board,
     crate::{Benchable, BenchableExt},
+    std::thread,
 };
 
 pub struct LifeSeq {
@@ -8,6 +9,8 @@ pub struct LifeSeq {
 }
 
 impl LifeSeq {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 1;
+
     pub fn new() -> Self {
         let board = None;
 
@@ -32,7 +35,9 @@ impl Benchable for LifeSeq {
 
 impl BenchableExt for LifeSeq {
     fn execution_threads(&self) -> usize {
-        1
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
 
@@ -41,6 +46,8 @@ pub struct LifeParIter {
 }
 
 impl LifeParIter {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 15;
+
     pub fn new() -> Self {
         let board = None;
 
@@ -65,7 +72,9 @@ impl Benchable for LifeParIter {
 
 impl BenchableExt for LifeParIter {
     fn execution_threads(&self) -> usize {
-        15
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
 
@@ -74,9 +83,14 @@ pub struct LifeParBridge {
 }
 
 impl LifeParBridge {
+    // LifeParBridge performs badly when executed on multiple cores,
+    // since the speedup decreases when the number of cores increase.
+    // For this reason, I've decided to limit the number of threads
+    // to 8.
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 8;
+
     pub fn new() -> Self {
         let board = None;
-
         Self { board }
     }
 }
@@ -97,11 +111,9 @@ impl Benchable for LifeParBridge {
 }
 
 impl BenchableExt for LifeParBridge {
-    // LifeParBridge performs badly when executed on multiple cores,
-    // since the speedup decreases when the number of cores increase.
-    // For this reason, I've decided to limit the number of threads
-    // to 8.
     fn execution_threads(&self) -> usize {
-        8
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }

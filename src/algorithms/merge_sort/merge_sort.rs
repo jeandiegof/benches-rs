@@ -1,4 +1,4 @@
-use {itertools::Itertools, pinscher::Benchable, std::iter};
+use {crate::BenchableExt, itertools::Itertools, pinscher::Benchable, std::iter, std::thread};
 
 pub struct MergeSort {
     levels: usize,
@@ -6,6 +6,8 @@ pub struct MergeSort {
 }
 
 impl MergeSort {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 43;
+
     const N: usize = 250_000_000 / 512;
 
     pub fn new(levels: usize) -> Self {
@@ -66,5 +68,13 @@ impl Benchable for MergeSort {
     fn teardown(&mut self) {
         let input = self.input.take().unwrap();
         assert!(input.windows(2).all(|e| e[0] <= e[1]))
+    }
+}
+
+impl BenchableExt for MergeSort {
+    fn execution_threads(&self) -> usize {
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
