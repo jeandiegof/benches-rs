@@ -17,7 +17,7 @@ mod weight;
 
 use self::graph::{Graph, Node};
 use self::solver::SolverCx;
-use crate::Benchable;
+use {crate::BenchableExt, pinscher::Benchable, std::thread};
 
 pub struct Tsp {
     graph: Graph,
@@ -27,6 +27,8 @@ const SEQ_THRESHOLD: usize = 8;
 const FROM: usize = 0;
 
 impl Tsp {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 10;
+
     pub fn new() -> Self {
         let path = Path::new("data/tsp/dj10.tsp");
         let graph = parse_graph(path).unwrap();
@@ -45,6 +47,14 @@ impl Benchable for Tsp {
     fn execute(&mut self) {
         let mut solver = SolverCx::new(&self.graph, SEQ_THRESHOLD);
         solver.search_from(Node::new(FROM));
+    }
+}
+
+impl BenchableExt for Tsp {
+    fn execution_threads(&self) -> usize {
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
 
