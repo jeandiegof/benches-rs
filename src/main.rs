@@ -13,6 +13,7 @@ use {
     bench_record::BenchRecord,
     csv::Writer,
     pinscher::{AllBenchers, BenchSuite, Benchable},
+    rayon::ThreadPoolBuilder,
 };
 
 fn main() {
@@ -49,8 +50,14 @@ fn bench<T>(algorithm: &mut T) -> AllBenchers
 where
     T: BenchableExt,
 {
+    let threads = algorithm.execution_threads();
     let mut all_benchers = AllBenchers::new().unwrap();
-    BenchSuite::bench(algorithm, &mut all_benchers).unwrap();
+    let pool = ThreadPoolBuilder::new()
+        .num_threads(threads)
+        .build()
+        .unwrap();
+
+    pool.install(|| BenchSuite::bench(algorithm, &mut all_benchers).unwrap());
 
     all_benchers
 }

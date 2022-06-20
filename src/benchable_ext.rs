@@ -1,6 +1,6 @@
 use pinscher::Benchable;
 
-pub trait BenchableExt: Benchable {
+pub trait BenchableExt: Benchable + Send {
     fn execution_threads(&self) -> usize;
 }
 
