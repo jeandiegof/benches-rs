@@ -1,7 +1,9 @@
+use crate::BenchableExt;
 use rand::distributions::Standard;
 use rand::Rng;
 
 use crate::Benchable;
+use std::thread;
 
 const BENCH_SIZE: usize = 250_000_000 / 512;
 
@@ -10,6 +12,8 @@ pub struct QuickSort {
 }
 
 impl QuickSort {
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 17;
+
     pub fn new() -> Self {
         let data = None;
         Self { data }
@@ -39,6 +43,14 @@ impl Benchable for QuickSort {
         } else {
             panic!();
         }
+    }
+}
+
+impl BenchableExt for QuickSort {
+    fn execution_threads(&self) -> usize {
+        let available_parallelism = thread::available_parallelism().unwrap();
+
+        Self::THREADS_TO_MAXIMUM_SPEEDUP.min(usize::from(available_parallelism))
     }
 }
 
