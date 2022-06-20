@@ -9,6 +9,9 @@ pub struct BenchRecord {
     /// id of the machine used to perform the experiment
     machine_id: String,
 
+    /// number of threads in the thread pool
+    threads: usize,
+
     /// CPU active time in micro seconds
     cpu_time_us: u128,
 
@@ -23,7 +26,12 @@ pub struct BenchRecord {
 }
 
 impl BenchRecord {
-    pub fn new(name: String, machine_id: String, all_benchers: AllBenchers) -> Self {
+    pub fn new(
+        name: String,
+        machine_id: String,
+        threads: usize,
+        all_benchers: AllBenchers,
+    ) -> Self {
         let cpu_time_bencher = all_benchers.cpu_time_bencher();
         let time_bencher = all_benchers.time_bencher();
         let energy_bencher = all_benchers.energy_bencher();
@@ -36,6 +44,7 @@ impl BenchRecord {
         Self {
             name,
             machine_id,
+            threads,
             cpu_time_us,
             wall_clock_time_us,
             package_energy,
