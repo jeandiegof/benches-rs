@@ -567,7 +567,6 @@ dependencies = [
  "crossbeam-deque",
  "either",
  "rayon-core",
- "tracing",
 ]
 
 [[package]]
@@ -577,9 +576,7 @@ dependencies = [
  "crossbeam-channel",
  "crossbeam-deque",
  "crossbeam-utils",
- "lazy_static",
  "num_cpus",
- "tracing",
 ]
 
 [[package]]
