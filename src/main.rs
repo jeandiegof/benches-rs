@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 mod algorithms;
 mod app_args;
 mod bench_record;
@@ -5,10 +6,7 @@ mod benchable_ext;
 pub use benchable_ext::BenchableExt;
 
 use {
-    algorithms::{
-        FrogJump, LifeParBridge, LifeParIter, LifeSeq, MergeSort, NBodyParIter, NBodyParReduce,
-        NBodySeq, QuickSort, Tsp,
-    },
+    algorithms::{LifeSeq, NBodySeq},
     app_args::AppArgs,
     bench_record::BenchRecord,
     csv::Writer,
@@ -39,10 +37,10 @@ fn bench<T>(algorithm: &mut T) -> AllBenchers
 where
     T: BenchableExt,
 {
-    let threads = algorithm.execution_threads();
     let mut all_benchers = AllBenchers::new().unwrap();
+    let threads = std::env::var("RAYON_NUM_THREADS").unwrap();
     let pool = ThreadPoolBuilder::new()
-        .num_threads(threads)
+        .num_threads(threads.parse().unwrap())
         .build()
         .unwrap();
 
