@@ -44,7 +44,8 @@ where
         .build()
         .unwrap();
 
-    pool.install(|| BenchSuite::bench(algorithm, &mut all_benchers).unwrap());
+    pool.install(|| ());
+    BenchSuite::bench(algorithm, &mut all_benchers).unwrap();
 
     all_benchers
 }
