@@ -12,6 +12,7 @@ use {
     csv::Writer,
     pinscher::{AllBenchers, BenchSuite, Benchable},
     rayon::ThreadPoolBuilder,
+    std::sync::{Arc, Mutex},
 };
 
 fn main() {
@@ -39,13 +40,27 @@ where
 {
     let mut all_benchers = AllBenchers::new().unwrap();
     let threads = std::env::var("RAYON_NUM_THREADS").unwrap();
+
+    let core_ids = Arc::new(Mutex::new(core_affinity::get_core_ids().unwrap()));
+
     let pool = ThreadPoolBuilder::new()
         .num_threads(threads.parse().unwrap())
+        .spawn_handler(|thread| {
+            let core_ids_cloned = core_ids.clone();
+
+            std::thread::spawn(move || {
+                let core_id = core_ids_cloned.lock().unwrap().pop().unwrap();
+                core_affinity::set_for_current(core_id);
+
+                thread.run();
+            });
+
+            Ok(())
+        })
         .build()
         .unwrap();
 
-    pool.install(|| ());
-    BenchSuite::bench(algorithm, &mut all_benchers).unwrap();
+    pool.install(|| BenchSuite::bench(algorithm, &mut all_benchers).unwrap());
 
     all_benchers
 }
