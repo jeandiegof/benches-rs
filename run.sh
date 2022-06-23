@@ -37,7 +37,7 @@ bench () {
 # run sleeping_threshold_us binary_name output_filename
 run () {
   echo "Running $2 with SLEEPING_THRESHOLD_US=$1 [$3]"
-  sudo SLEEPING_THRESHOLD_US=$1 ./$2 --runs $RUNS --output-filename $3
+  sudo SLEEPING_THRESHOLD_US=$1 WAITING_TIME_MULTIPLIER=2 ./$2 --runs $RUNS --output-filename $3
 }
 
 cleanup() {
