@@ -50,7 +50,10 @@ fn bench<T>(algorithm: &mut T) -> AllBenchers
 where
     T: BenchableExt,
 {
-    let threads = algorithm.execution_threads();
+    let threads = std::env::var("RAYON_NUM_THREADS")
+        .and_then(|t| Ok(t.parse().unwrap()))
+        .unwrap_or(algorithm.execution_threads());
+
     let mut all_benchers = AllBenchers::new().unwrap();
     let pool = ThreadPoolBuilder::new()
         .num_threads(threads)
@@ -69,7 +72,9 @@ where
 {
     let name = algorithm.name().to_string();
     let hostname = sys_info::hostname().unwrap_or("unknown".to_string());
-    let threads = algorithm.execution_threads();
+    let threads = std::env::var("RAYON_NUM_THREADS")
+        .and_then(|t| Ok(t.parse().unwrap()))
+        .unwrap_or(algorithm.execution_threads());
 
     let record = BenchRecord::new(name, hostname, threads, all_benchers);
     writer.serialize(record).unwrap();
