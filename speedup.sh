@@ -29,8 +29,8 @@ bench () {
   CORES=`nproc --all`
   for threads in $(seq 1 $CORES);
   do
-    ref_filename="$REF_BRANCH-$threads-threads.csv"
-    run $threads 0 0 $REF_BRANCH $ref_filename
+    # ref_filename="$REF_BRANCH-$threads-threads.csv"
+    # run $threads 0 0 $REF_BRANCH $ref_filename
 
     new_filename="$NEW_ALGORITHM_BRANCH-$threads-threads-${SLEEPING_THRESHOLD_US}us-$WAITING_TIME_MULTIPLIER.csv"
     run $threads $SLEEPING_THRESHOLD_US $WAITING_TIME_MULTIPLIER $NEW_ALGORITHM_BRANCH $new_filename

@@ -26,31 +26,21 @@ fn main() {
         for algorithm in &mut algorithms {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
             let bench_results = bench(algorithm);
-            save_results(&mut csv_writer, algorithm, bench_results);
+            let time_bencher = bench_results.time_bencher();
+            println!("{}", time_bencher.real_time().unwrap().as_micros());
         }
     }
 }
 
 fn algorithms() -> Vec<Box<dyn BenchableExt>> {
-    vec![
-        Box::new(MergeSort::new(8)),
-        Box::new(FrogJump::new()),
-        Box::new(LifeSeq::new()),
-        Box::new(LifeParIter::new()),
-        Box::new(LifeParBridge::new()),
-        Box::new(NBodyParIter::new()),
-        Box::new(NBodyParReduce::new()),
-        Box::new(NBodySeq::new()),
-        Box::new(QuickSort::new()),
-        Box::new(Tsp::new()),
-    ]
+    vec![Box::new(LifeSeq::new())]
 }
 
 fn bench<T>(algorithm: &mut T) -> AllBenchers
 where
     T: BenchableExt,
 {
-    let threads = algorithm.execution_threads();
+    let threads = 4;
     let mut all_benchers = AllBenchers::new().unwrap();
     let pool = ThreadPoolBuilder::new()
         .num_threads(threads)
@@ -60,21 +50,6 @@ where
     pool.install(|| BenchSuite::bench(algorithm, &mut all_benchers).unwrap());
 
     all_benchers
-}
-
-fn save_results<W, T>(writer: &mut Writer<W>, algorithm: &T, all_benchers: AllBenchers)
-where
-    W: std::io::Write,
-    T: BenchableExt,
-{
-    let name = algorithm.name().to_string();
-    let hostname = sys_info::hostname().unwrap_or("unknown".to_string());
-    let threads = std::env::var("RAYON_NUM_THREADS")
-        .and_then(|t| Ok(t.parse().unwrap()))
-        .unwrap_or(algorithm.execution_threads());
-
-    let record = BenchRecord::new(name, hostname, threads, all_benchers);
-    writer.serialize(record).unwrap();
 }
 
 pub fn seeded_rng() -> rand_xorshift::XorShiftRng {

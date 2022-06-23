@@ -29,7 +29,7 @@ impl Benchable for LifeSeq {
 
     fn execute(&mut self) {
         let board = self.board.take().unwrap();
-        super::generations(board, 100);
+        super::generations(board, 1000);
     }
 }
 
