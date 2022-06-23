@@ -3,6 +3,7 @@ mod app_args;
 mod bench_record;
 mod benchable_ext;
 pub use benchable_ext::BenchableExt;
+use rayon::ThreadPool;
 
 use {
     algorithms::{
@@ -19,13 +20,14 @@ use {
 fn main() {
     let args = AppArgs::new();
     let mut csv_writer = Writer::from_path(args.output_filename()).unwrap();
+    let mut algorithms = algorithms();
 
-    for i in 1..=args.runs() {
-        let mut algorithms = algorithms();
+    for algorithm in &mut algorithms {
+        let pool = build_thread_pool(algorithm);
 
-        for algorithm in &mut algorithms {
+        for i in 1..=args.runs() {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
-            let bench_results = bench(algorithm);
+            let bench_results = bench(algorithm, &pool);
             save_results(&mut csv_writer, algorithm, bench_results);
         }
     }
@@ -46,7 +48,7 @@ fn algorithms() -> Vec<Box<dyn BenchableExt>> {
     ]
 }
 
-fn bench<T>(algorithm: &mut T) -> AllBenchers
+fn build_thread_pool<T>(algorithm: &mut T) -> ThreadPool
 where
     T: BenchableExt,
 {
@@ -54,12 +56,17 @@ where
         .and_then(|t| Ok(t.parse().unwrap()))
         .unwrap_or(algorithm.execution_threads());
 
-    let mut all_benchers = AllBenchers::new().unwrap();
-    let pool = ThreadPoolBuilder::new()
+    ThreadPoolBuilder::new()
         .num_threads(threads)
         .build()
-        .unwrap();
+        .unwrap()
+}
 
+fn bench<T>(algorithm: &mut T, pool: &ThreadPool) -> AllBenchers
+where
+    T: BenchableExt,
+{
+    let mut all_benchers = AllBenchers::new().unwrap();
     pool.install(|| BenchSuite::bench(algorithm, &mut all_benchers).unwrap());
 
     all_benchers
