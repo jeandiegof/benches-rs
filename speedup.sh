@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
-# set -x
 
 REF_BRANCH=master
 NEW_ALGORITHM_BRANCH=new-algorithm
+SLEEPING_THRESHOLD_US=10
+WAITING_TIME_MULTIPLIER=2
+
 BENCHES_DIR=`pwd`
 RAYON_PATH=$BENCHES_DIR/../rayon-fork
 RUNS=30
@@ -25,17 +27,28 @@ prepare_binaries () {
 
 bench () {  
   CORES=`nproc --all`
-  for i in $(seq 1 $CORES);
+  for threads in $(seq 1 $CORES);
   do
-    run $i $REF_BRANCH $REF_BRANCH-$i-threads.csv
-    run $i $NEW_ALGORITHM_BRANCH $NEW_ALGORITHM_BRANCH-$i-threads-10us.csv
+    ref_filename="$REF_BRANCH-$threads-threads.csv"
+    run $threads 0 0 $REF_BRANCH $ref_filename
+
+    new_filename="$NEW_ALGORITHM_BRANCH-$threads-threads-${SLEEPING_THRESHOLD_US}us-$WAITING_TIME_MULTIPLIER.csv"
+    run $threads $SLEEPING_THRESHOLD_US $WAITING_TIME_MULTIPLIER $NEW_ALGORITHM_BRANCH $new_filename
   done
 }
 
-# run threads binary_name output_filename
+# run threads sleeping_threshold multiplier binary_name output_filename
 run () {
-  echo "Running $2 with $1 threads [$3]"
-  sudo RAYON_NUM_THREADS=$1 SLEEPING_THRESHOLD_US=10 ./$2 --runs $RUNS --output-filename $3
+  local threads=$1
+  local sleeping_threshold=$2
+  local multiplying_factor=$3
+  local binary_name=$4
+  local output_filename=$5
+
+  echo "Running $binary_name with $threads threads, st = $sleeping_threshold, tm = $multiplying_factor [$output_filename]"
+  sudo RAYON_NUM_THREADS=$threads \
+       SLEEPING_THRESHOLD_US=$sleeping_threshold \
+       WAITING_TIME_MULTIPLIER=$multiplying_factor ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
 cleanup() {
