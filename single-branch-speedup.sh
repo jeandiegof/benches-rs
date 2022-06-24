@@ -6,14 +6,14 @@ WAITING_TIME_MULTIPLIER=2
 
 BENCHES_DIR=`pwd`
 RAYON_PATH=$BENCHES_DIR/../rayon-fork
-RUNS=1
+RUNS=50
 
 bench () {  
   CORES=`nproc --all`
   for threads in $(seq 1 $CORES);
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
-      echo $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks speedup-$threads-threads-$st-us.csv
+      run $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks output/speedup-$threads-threads-$st-us.csv
     done
   done
 }
@@ -29,7 +29,7 @@ run () {
   echo "Running $binary_name with $threads threads, st = $sleeping_threshold, tm = $multiplying_factor [$output_filename]"
   sudo RAYON_NUM_THREADS=$threads \
        SLEEPING_THRESHOLD_US=$sleeping_threshold \
-       WAITING_TIME_MULTIPLIER=$multiplying_factor perf stat ./$binary_name --runs $RUNS --output-filename $output_filename
+       WAITING_TIME_MULTIPLIER=$multiplying_factor ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
 bench
