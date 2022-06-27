@@ -6,9 +6,26 @@ NEW_ALGORITHM_BRANCH=new-algorithm
 SLEEPING_THRESHOLD_US=10
 WAITING_TIME_MULTIPLIER=2
 
+CPU_FREQ=2.1GHz
 BENCHES_DIR=`pwd`
 RAYON_PATH=$BENCHES_DIR/../rayon-fork
 RUNS=30
+
+disable_cpu_performance_scaling() {
+  echo 'Setting governor to performance'
+  sudo cpupower frequency-set -g performance
+
+  echo "Setting frequency range to [${CPU_FREQ}, ${CPU_FREQ}]"
+  sudo cpupower frequency-set --min $CPU_FREQ --max $CPU_FREQ
+
+  idle_states=`cpupower idle-info | grep 'Number of idle states:' | awk -F': ' '{print $2}'`
+  echo "Disabling all cpu idle states [$idle_states]"
+
+  for i in $(seq 1 $idle_states);
+  do
+    sudo cpupower idle-set --disable $i
+  done
+}
 
 # build_benches branch-name
 build_benches () {  
@@ -56,6 +73,7 @@ cleanup() {
   rm -rf $REF_BRANCH $NEW_ALGORITHM_BRANCH
 }
 
+disable_cpu_performance_scaling
 prepare_binaries $REF_BRANCH $NEW_ALGORITHM_BRANCH
 bench
 cleanup
