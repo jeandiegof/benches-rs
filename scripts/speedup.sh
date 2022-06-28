@@ -24,7 +24,7 @@ bench () {
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
       for wt in ${WAITING_TIME_MULTIPLIER[@]}; do
-        run $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks output/speedup-$threads-threads-$st-us.csv
+        run $threads $st $wt target/release/benchmarks output/speedup-$threads-threads-$st-us-$wt.csv
       done
     done
   done
