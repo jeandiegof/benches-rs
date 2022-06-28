@@ -9,7 +9,7 @@ source "$SCRIPTS_DIR/performance-scaling.sh"
 RAYON_PATH="$SCRIPTS_DIR/../../rayon-fork"
 RAYON_BRANCH="new-algorithm"
 
-SLEEPING_THRESHOLDS=(1 5 10 50 100 500 1000 5000 10000 20000 40000 60000 80000 100000)
+SLEEPING_THRESHOLDS=(500)
 WAITING_TIME_MULTIPLIER=(2)
 RUNS=50
 
@@ -19,7 +19,8 @@ build () {
 }
 
 bench () {  
-  CORES=`nproc --all`
+  THREADS=`nproc --all`
+  CORES=$(($THREADS/2))
   for threads in $(seq 1 $CORES);
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
