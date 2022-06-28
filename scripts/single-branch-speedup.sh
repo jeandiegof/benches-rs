@@ -1,19 +1,31 @@
 #!/bin/bash
 set -e
 
-SLEEPING_THRESHOLDS=(1 5 10 50 100 500 1000 5000 10000 20000 40000 60000 80000 100000)
-WAITING_TIME_MULTIPLIER=2
+# includes
+SCRIPTS_DIR="$(dirname "$0")"
+source "$SCRIPTS_DIR/performance-scaling.sh"
 
-BENCHES_DIR=`pwd`
-RAYON_PATH=$BENCHES_DIR/../rayon-fork
+# variables
+RAYON_PATH="$SCRIPTS_DIR/../../rayon-fork"
+RAYON_BRANCH="new-algorithm"
+
+SLEEPING_THRESHOLDS=(1 5 10 50 100 500 1000 5000 10000 20000 40000 60000 80000 100000)
+WAITING_TIME_MULTIPLIER=(2)
 RUNS=50
+
+build () {
+  cd $RAYON_PATH && git checkout $RAYON_BRANCH
+  cd $SCRIPTS_DIR/../ && cargo clean && cargo build --release
+}
 
 bench () {  
   CORES=`nproc --all`
   for threads in $(seq 1 $CORES);
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
-      run $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks output/speedup-$threads-threads-$st-us.csv
+      for wt in ${WAITING_TIME_MULTIPLIER[@]}; do
+        run $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks output/speedup-$threads-threads-$st-us.csv
+      done
     done
   done
 }
@@ -32,5 +44,7 @@ run () {
        WAITING_TIME_MULTIPLIER=$multiplying_factor ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
+disable_performance_scaling 2.1GHz
+build
 bench
 
