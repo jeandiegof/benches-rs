@@ -2,43 +2,31 @@
 set -e
 
 # includes
-current_dir="$(dirname "$0")"
-source "$current_dir/performance-scaling.sh"
+SCRIPTS_DIR="$(dirname "$0")"
+source "$SCRIPTS_DIR/performance-scaling.sh"
 
-REF_BRANCH=master
-NEW_ALGORITHM_BRANCH=new-algorithm
-SLEEPING_THRESHOLD_US=10
-WAITING_TIME_MULTIPLIER=2
+# variables
+RAYON_PATH="$SCRIPTS_DIR/../../rayon-fork"
+RAYON_BRANCH="new-algorithm"
 
-CPU_FREQ=2.1GHz
-BENCHES_DIR=`pwd`
-RAYON_PATH=$BENCHES_DIR/../rayon-fork
-RUNS=30
+SLEEPING_THRESHOLDS=(1 5 10 50 100 500 1000 5000 10000 20000 40000 60000 80000 100000)
+WAITING_TIME_MULTIPLIER=(2)
+RUNS=50
 
-# build_benches branch-name
-build_benches () {  
-  cd $RAYON_PATH && git checkout $1
-  cd $BENCHES_DIR && cargo clean
-
-  cargo build --release
-  cp ./target/release/benchmarks $BENCHES_DIR/$1
-}
-
-# prepare_binaries branch1 branch2
-prepare_binaries () {
-  build_benches $1
-  build_benches $2
+build () {
+  cd $RAYON_PATH && git checkout $RAYON_BRANCH
+  cd $SCRIPTS_DIR/../ && cargo clean && cargo build --release
 }
 
 bench () {  
   CORES=`nproc --all`
   for threads in $(seq 1 $CORES);
   do
-    ref_filename="$REF_BRANCH-$threads-threads.csv"
-    run $threads 0 0 $REF_BRANCH $ref_filename
-
-    new_filename="$NEW_ALGORITHM_BRANCH-$threads-threads-${SLEEPING_THRESHOLD_US}us-$WAITING_TIME_MULTIPLIER.csv"
-    run $threads $SLEEPING_THRESHOLD_US $WAITING_TIME_MULTIPLIER $NEW_ALGORITHM_BRANCH $new_filename
+    for st in ${SLEEPING_THRESHOLDS[@]}; do
+      for wt in ${WAITING_TIME_MULTIPLIER[@]}; do
+        run $threads $st $WAITING_TIME_MULTIPLIER target/release/benchmarks output/speedup-$threads-threads-$st-us.csv
+      done
+    done
   done
 }
 
@@ -56,13 +44,7 @@ run () {
        WAITING_TIME_MULTIPLIER=$multiplying_factor ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
-cleanup() {
-  cd $BENCHES_DIR
-  rm -rf $REF_BRANCH $NEW_ALGORITHM_BRANCH
-}
-
-disable_performance_scaling $CPU_FREQ
-prepare_binaries $REF_BRANCH $NEW_ALGORITHM_BRANCH
+disable_performance_scaling 2.1GHz
+build
 bench
-cleanup
 
