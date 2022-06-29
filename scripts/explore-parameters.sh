@@ -11,8 +11,8 @@ RAYON_PATH="/home/jsilvafontena/lig/rayon-fork"
 BENCHMARKS_PATH="/home/jsilvafontena/lig/benchmarks-rs"
 RAYON_BRANCH="new-algorithm"
 
-SLEEPING_THRESHOLDS=(50 100 500 1000 5000 10000 20000 40000 50000)
-WAITING_TIME_MULTIPLIER=(1 1.0625 1.125 1.25 1.5 2)
+SLEEPING_THRESHOLDS=(50 100 500 1000 5000 10000 20000 40000 50000 100000)
+WAITING_TIME_MULTIPLIER=(1 1.03125 1.0625 1.125 1.25 1.5 2)
 RUNS=30
 
 build () {
@@ -27,7 +27,7 @@ bench () {
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
       for wt in ${WAITING_TIME_MULTIPLIER[@]}; do
-        run $threads $st $wt target/release/benchmarks output/speedup-$RAYON_BRANCH-$threads-threads-$st-us-$wt.csv
+        run $threads $st $wt target/release/benchmarks output/parameters-$RAYON_BRANCH-$threads-threads-$st-us-$wt.csv
       done
     done
   done
@@ -42,8 +42,7 @@ run () {
   local output_filename=$5
 
   echo "Running $binary_name with $threads threads, st = $sleeping_threshold, tm = $multiplying_factor [$output_filename]"
-  sudo RAYON_NUM_THREADS=$threads \
-       SLEEPING_THRESHOLD_US=$sleeping_threshold \
+  sudo SLEEPING_THRESHOLD_US=$sleeping_threshold \
        WAITING_TIME_MULTIPLIER=$multiplying_factor ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
