@@ -27,7 +27,7 @@ const SEQ_THRESHOLD: usize = 8;
 const FROM: usize = 0;
 
 impl Tsp {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 10;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let path = Path::new("data/tsp/dj10.tsp");

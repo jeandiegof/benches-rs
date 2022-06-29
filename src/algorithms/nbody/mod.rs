@@ -11,7 +11,7 @@ pub struct NBodySeq {
 }
 
 impl NBodySeq {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 1;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let nbody_benchmark = None;
@@ -51,7 +51,7 @@ pub struct NBodyParIter {
 }
 
 impl NBodyParIter {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 51;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let nbody_benchmark = None;
@@ -91,7 +91,7 @@ pub struct NBodyParReduce {
 }
 
 impl NBodyParReduce {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 26;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let nbody_benchmark = None;

@@ -9,7 +9,7 @@ pub struct LifeSeq {
 }
 
 impl LifeSeq {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 1;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let board = None;
@@ -46,7 +46,7 @@ pub struct LifeParIter {
 }
 
 impl LifeParIter {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 15;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 22;
 
     pub fn new() -> Self {
         let board = None;

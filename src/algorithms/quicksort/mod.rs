@@ -12,7 +12,7 @@ pub struct QuickSort {
 }
 
 impl QuickSort {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 17;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     pub fn new() -> Self {
         let data = None;

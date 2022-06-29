@@ -6,7 +6,7 @@ pub struct MergeSort {
 }
 
 impl MergeSort {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 43;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
 
     const N: usize = 250_000_000 / 512;
 
