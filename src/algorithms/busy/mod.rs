@@ -1,9 +1,6 @@
 use {
     crate::{Benchable, BenchableExt},
-    std::{
-        thread,
-        time::{Duration, Instant},
-    },
+    std::thread,
 };
 
 pub struct Busy;
@@ -22,16 +19,8 @@ impl Benchable for Busy {
     }
 
     fn execute(&mut self) {
-        let start = Instant::now();
-
-        loop {
-            if start.elapsed() > Duration::from_micros(100) {
-                break;
-            }
-
-            for _ in 0..10000 {
-                unsafe { std::arch::asm!("nop") }
-            }
+        for _ in 0..1_000_000_000 {
+            unsafe { std::arch::asm!("nop") }
         }
     }
 }
