@@ -58,8 +58,8 @@ where
     T: BenchableExt,
 {
     let threads = std::env::var("RAYON_NUM_THREADS")
-        .and_then(|t| Ok(t.parse().unwrap()))
-        .unwrap_or(algorithm.execution_threads());
+        .map(|t| t.parse().unwrap())
+        .unwrap_or_else(|_| algorithm.execution_threads());
 
     let core_ids = Arc::new(Mutex::new(core_affinity::get_core_ids().unwrap()));
 
@@ -97,10 +97,10 @@ where
     T: BenchableExt,
 {
     let name = algorithm.name().to_string();
-    let hostname = sys_info::hostname().unwrap_or("unknown".to_string());
+    let hostname = sys_info::hostname().unwrap_or_else(|_| "unknown".to_string());
     let threads = std::env::var("RAYON_NUM_THREADS")
-        .and_then(|t| Ok(t.parse().unwrap()))
-        .unwrap_or(algorithm.execution_threads());
+        .map(|t| t.parse().unwrap())
+        .unwrap_or_else(|_| algorithm.execution_threads());
 
     let record = BenchRecord::new(name, hostname, threads, all_benchers);
     writer.serialize(record).unwrap();
