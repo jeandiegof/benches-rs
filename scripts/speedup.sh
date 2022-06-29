@@ -1,21 +1,23 @@
 #!/bin/bash
 set -e
+set -x
 
 # includes
 SCRIPTS_DIR="$(dirname "$0")"
 source "$SCRIPTS_DIR/performance-scaling.sh"
 
 # variables
-RAYON_PATH="$SCRIPTS_DIR/../../rayon-fork"
-RAYON_BRANCH="new-algorithm"
+RAYON_PATH="/home/jsilvafontena/lig/rayon-fork"
+BENCHMARKS_PATH="/home/jsilvafontena/lig/benchmarks-rs"
+RAYON_BRANCH="master"
 
 SLEEPING_THRESHOLDS=(500)
 WAITING_TIME_MULTIPLIER=(2)
-RUNS=50
+RUNS=30
 
 build () {
   cd $RAYON_PATH && git checkout $RAYON_BRANCH
-  cd $SCRIPTS_DIR/../ && cargo clean && cargo build --release
+  cd $BENCHMARKS_PATH && cargo clean && cargo build --release
 }
 
 bench () {  
@@ -25,7 +27,7 @@ bench () {
   do
     for st in ${SLEEPING_THRESHOLDS[@]}; do
       for wt in ${WAITING_TIME_MULTIPLIER[@]}; do
-        run $threads $st $wt target/release/benchmarks output/speedup-$threads-threads-$st-us-$wt.csv
+        run $threads $st $wt target/release/benchmarks output/speedup-$RAYON_BRANCH-$threads-threads-$st-us-$wt.csv
       done
     done
   done
