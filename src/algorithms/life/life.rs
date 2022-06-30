@@ -1,7 +1,7 @@
 use {
     super::Board,
     crate::{Benchable, BenchableExt},
-    std::thread,
+    std::{thread, time::Instant},
 };
 
 pub struct LifeSeq {
@@ -43,6 +43,7 @@ impl BenchableExt for LifeSeq {
 
 pub struct LifeParIter {
     board: Option<Board>,
+    counter: usize,
 }
 
 impl LifeParIter {
@@ -51,7 +52,7 @@ impl LifeParIter {
     pub fn new() -> Self {
         let board = None;
 
-        Self { board }
+        Self { board, counter: 0 }
     }
 }
 
@@ -65,11 +66,21 @@ impl Benchable for LifeParIter {
     }
 
     fn execute(&mut self) {
-        diam::svg("graph.svg", || {
+        let filename = &format!("graph-run-{}.svg", self.counter);
+
+        diam::svg(filename, || {
             let board = self.board.take().unwrap();
-            super::parallel_generations(board, 100)
+            let instant = Instant::now();
+            super::parallel_generations(board, 1);
+            println!(
+                "Run {} took {}",
+                self.counter,
+                instant.elapsed().as_micros()
+            );
         })
         .expect("Failed to generate svg");
+
+        self.counter = self.counter + 1;
     }
 }
 
