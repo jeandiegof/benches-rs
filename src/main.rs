@@ -7,8 +7,8 @@ use rayon::ThreadPool;
 
 use {
     algorithms::{
-        Busy, FrogJump, LifeParBridge, LifeParIter, LifeSeq, MergeSort, NBodyParIter,
-        NBodyParReduce, NBodySeq, QuickSort, Tsp,
+        FrogJump, LifeParBridge, LifeParIter, LifeSeq, MergeSort, NBodyParIter, NBodyParReduce,
+        NBodySeq, QuickSort, Tsp,
     },
     app_args::AppArgs,
     bench_record::BenchRecord,
@@ -49,7 +49,6 @@ fn algorithms() -> Vec<Box<dyn BenchableExt>> {
         Box::new(NBodySeq::new()),
         Box::new(QuickSort::new()),
         Box::new(Tsp::new()),
-        Box::new(Busy::new()),
     ]
 }
 
