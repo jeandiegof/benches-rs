@@ -27,10 +27,9 @@ fn main() {
     let mut algorithms = algorithms();
 
     for algorithm in &mut algorithms {
-        let pool = build_thread_pool(algorithm);
-
         for i in 1..=args.runs() {
             println!("Running {} {}/{}", algorithm.name(), i, args.runs());
+            let pool = build_thread_pool(algorithm);
             let bench_results = bench(algorithm, &pool);
             save_results(&mut csv_writer, algorithm, bench_results);
         }
