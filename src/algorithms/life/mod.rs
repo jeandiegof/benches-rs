@@ -10,6 +10,8 @@ use rayon::prelude::*;
 mod life;
 pub use life::{LifeParBridge, LifeParIter, LifeSeq};
 
+use diam::prelude::*;
+
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Board {
     board: Vec<bool>,
@@ -81,6 +83,7 @@ impl Board {
         let new_brd = (0..self.len())
             .into_par_iter()
             .map(|cell| self.successor_cell(cell))
+            .log("log")
             .collect();
 
         self.next_board(new_brd)

@@ -38,18 +38,7 @@ fn main() {
 }
 
 fn algorithms() -> Vec<Box<dyn BenchableExt>> {
-    vec![
-        Box::new(MergeSort::new(8)),
-        Box::new(FrogJump::new()),
-        Box::new(LifeSeq::new()),
-        Box::new(LifeParIter::new()),
-        Box::new(LifeParBridge::new()),
-        Box::new(NBodyParIter::new()),
-        Box::new(NBodyParReduce::new()),
-        Box::new(NBodySeq::new()),
-        Box::new(QuickSort::new()),
-        Box::new(Tsp::new()),
-    ]
+    vec![Box::new(LifeParIter::new())]
 }
 
 fn build_thread_pool<T>(algorithm: &mut T) -> ThreadPool

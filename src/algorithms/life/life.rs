@@ -46,7 +46,7 @@ pub struct LifeParIter {
 }
 
 impl LifeParIter {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 22;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 12;
 
     pub fn new() -> Self {
         let board = None;
@@ -65,8 +65,11 @@ impl Benchable for LifeParIter {
     }
 
     fn execute(&mut self) {
-        let board = self.board.take().unwrap();
-        super::parallel_generations(board, 100)
+        diam::svg("graph.svg", || {
+            let board = self.board.take().unwrap();
+            super::parallel_generations(board, 100)
+        })
+        .expect("Failed to generate svg");
     }
 }
 
