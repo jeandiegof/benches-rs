@@ -9,10 +9,10 @@ source "$SCRIPTS_DIR/performance-scaling.sh"
 # variables
 RAYON_PATH="/home/jsilvafontena/lig/rayon-fork"
 BENCHMARKS_PATH="/home/jsilvafontena/lig/benchmarks-rs"
-RAYON_BRANCH="master"
+RAYON_BRANCH="new-algorithm"
 
 SLEEPING_THRESHOLDS=(500)
-WAITING_TIME_MULTIPLIER=(2)
+WAITING_TIME_MULTIPLIER=(1.25)
 RUNS=30
 
 build () {
