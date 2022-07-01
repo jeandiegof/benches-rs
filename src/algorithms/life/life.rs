@@ -66,19 +66,19 @@ impl Benchable for LifeParIter {
     }
 
     fn execute(&mut self) {
-        let filename = &format!("graph-run-{}.svg", self.counter);
+        let filename = &format!("run-{}.json", self.counter);
 
-        diam::svg(filename, || {
+        diam::gantt_json(filename, || {
             let board = self.board.take().unwrap();
             let instant = Instant::now();
-            super::parallel_generations(board, 1);
+            super::parallel_generations(board, 10);
             println!(
                 "Run {} took {}",
                 self.counter,
                 instant.elapsed().as_micros()
             );
         })
-        .expect("Failed to generate svg");
+        .expect("Failed to generate json");
 
         self.counter = self.counter + 1;
     }
