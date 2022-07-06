@@ -66,7 +66,7 @@ impl Benchable for LifeParIter {
 
     fn execute(&mut self) {
         let board = self.board.take().unwrap();
-        super::parallel_generations(board, 10)
+        super::parallel_generations(board, 100)
     }
 }
 
