@@ -33,7 +33,7 @@ run () {
   local output_filename=$3
 
   echo "Running $binary_name with $threads threads [$output_filename]"
-  echo RAYON_NUM_THREADS=$threads ./$binary_name --runs $RUNS --output-filename $output_filename
+  sudo RAYON_NUM_THREADS=$threads ./$binary_name --runs $RUNS --output-filename $output_filename
 }
 
 disable_performance_scaling 2.1GHz
