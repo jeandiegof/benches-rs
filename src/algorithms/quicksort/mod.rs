@@ -4,6 +4,7 @@ use rand::Rng;
 
 use crate::Benchable;
 use std::thread;
+use std::time::Instant;
 
 const BENCH_SIZE: usize = 250_000_000 / 512;
 
@@ -33,7 +34,12 @@ impl Benchable for QuickSort {
     fn execute(&mut self) {
         if let Some(data) = self.data.as_mut() {
             let filename = &format!("quicksort-{}.json", self.run);
-            diam::gantt_json(filename, || quick_sort::<Parallel, u32>(data)).unwrap();
+            diam::gantt_json(filename, || {
+                let begin = Instant::now();
+                quick_sort::<Parallel, u32>(data);
+                println!("{}: {}", self.run, begin.elapsed().as_micros());
+            })
+            .unwrap();
             self.run = self.run + 1;
         } else {
             panic!();
