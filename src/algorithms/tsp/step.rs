@@ -12,8 +12,12 @@ pub fn step<'s>(scope: &Scope<'s>, solver: &'s SolverCx<'s>) {
 
     let remaining = solver.graph().num_nodes() - element.len;
     if remaining <= solver.seq_threshold() {
+        let span = tracing::span!(tracing::Level::TRACE, "seq");
+        let _guard = span.enter();
         solve_tour_seq(solver, element);
     } else {
+        let span = tracing::span!(tracing::Level::TRACE, "par");
+        let _guard = span.enter();
         split_tour(scope, solver, element);
     }
 }

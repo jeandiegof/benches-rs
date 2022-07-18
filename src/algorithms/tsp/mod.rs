@@ -7,6 +7,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::time::Instant;
 
 mod graph;
 mod parser;
@@ -21,6 +22,7 @@ use {crate::BenchableExt, pinscher::Benchable, std::thread};
 
 pub struct Tsp {
     graph: Graph,
+    run: usize,
 }
 
 const SEQ_THRESHOLD: usize = 8;
@@ -35,7 +37,7 @@ impl Tsp {
 
         assert!(FROM < graph.num_nodes());
 
-        Self { graph }
+        Self { graph, run: 0 }
     }
 }
 
@@ -45,8 +47,16 @@ impl Benchable for Tsp {
     }
 
     fn execute(&mut self) {
-        let mut solver = SolverCx::new(&self.graph, SEQ_THRESHOLD);
-        solver.search_from(Node::new(FROM));
+        let filename = &format!("tsp-{}.json", self.run);
+        diam::gantt_json(filename, || {
+            let begin = Instant::now();
+            let mut solver = SolverCx::new(&self.graph, SEQ_THRESHOLD);
+            solver.search_from(Node::new(FROM));
+            println!("{}: {}", self.run, begin.elapsed().as_micros())
+        })
+        .unwrap();
+
+        self.run = self.run + 1;
     }
 }
 
