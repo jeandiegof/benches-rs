@@ -88,7 +88,7 @@ impl Joiner for Parallel {
         RA: Send,
         RB: Send,
     {
-        rayon::join(oper_a, oper_b)
+        diam::join(oper_a, oper_b)
     }
 }
 
