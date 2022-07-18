@@ -9,14 +9,15 @@ const BENCH_SIZE: usize = 250_000_000 / 512;
 
 pub struct QuickSort {
     data: Option<Vec<u32>>,
+    run: usize,
 }
 
 impl QuickSort {
-    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 32;
+    const THREADS_TO_MAXIMUM_SPEEDUP: usize = 15;
 
     pub fn new() -> Self {
         let data = None;
-        Self { data }
+        Self { data, run: 0 }
     }
 }
 
@@ -31,7 +32,9 @@ impl Benchable for QuickSort {
 
     fn execute(&mut self) {
         if let Some(data) = self.data.as_mut() {
-            quick_sort::<Parallel, u32>(data);
+            let filename = &format!("quicksort-{}.json", self.run);
+            diam::gantt_json(filename, || quick_sort::<Parallel, u32>(data)).unwrap();
+            self.run = self.run + 1;
         } else {
             panic!();
         }
