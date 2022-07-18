@@ -88,7 +88,7 @@ impl Joiner for Parallel {
         RA: Send,
         RB: Send,
     {
-        diam::join(oper_a, oper_b)
+        rayon::join(oper_a, oper_b)
     }
 }
 
@@ -119,10 +119,20 @@ pub fn quick_sort<J: Joiner, T: PartialOrd + Send>(v: &mut [T]) {
     }
 
     if J::is_parallel() && v.len() <= 5 * 1024 {
+        let span = tracing::span!(tracing::Level::TRACE, "seq");
+        let _guard = span.enter();
         return quick_sort::<Sequential, T>(v);
     }
 
-    let mid = partition(v);
+    let mid = {
+        if J::is_parallel() {
+            let span = tracing::span!(tracing::Level::TRACE, "part");
+            let _guard = span.enter();
+            partition(v)
+        } else {
+            partition(v)
+        }
+    };
     let (lo, hi) = v.split_at_mut(mid);
     J::join(|| quick_sort::<J, T>(lo), || quick_sort::<J, T>(hi));
 }
