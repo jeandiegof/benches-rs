@@ -15,10 +15,6 @@ use {
     csv::Writer,
     pinscher::{AllBenchers, BenchSuite, Benchable},
     rayon::ThreadPoolBuilder,
-    std::{
-        sync::{Arc, Mutex},
-        thread,
-    },
 };
 
 fn main() {
@@ -59,22 +55,8 @@ where
         .map(|t| t.parse().unwrap())
         .unwrap_or_else(|_| algorithm.execution_threads());
 
-    let core_ids = Arc::new(Mutex::new(core_affinity::get_core_ids().unwrap()));
-
     ThreadPoolBuilder::new()
         .num_threads(threads)
-        .spawn_handler(|thread| {
-            let core_ids_cloned = core_ids.clone();
-
-            thread::spawn(move || {
-                let core_id = core_ids_cloned.lock().unwrap().pop().unwrap();
-                core_affinity::set_for_current(core_id);
-
-                thread.run();
-            });
-
-            Ok(())
-        })
         .build()
         .unwrap()
 }
