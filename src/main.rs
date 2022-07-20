@@ -38,7 +38,7 @@ fn algorithms() -> Vec<Box<dyn BenchableExt>> {
         Box::new(FrogJump::new()),
         Box::new(LifeSeq::new()),
         Box::new(LifeParIter::new()),
-        Box::new(LifeParBridge::new()),
+        // Box::new(LifeParBridge::new()),
         Box::new(NBodyParIter::new()),
         Box::new(NBodyParReduce::new()),
         Box::new(NBodySeq::new()),
