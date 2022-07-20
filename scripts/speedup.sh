@@ -13,11 +13,12 @@ build () {
 }
 
 bench () {  
+  mkdir -p output
   THREADS=`nproc --all`
 
   for nb_threads in $(seq 1 $THREADS);
   do
-    run $nb_threads target/release/benchmarks output/speedup-$RAYON_BRANCH-$threads-threads.csv
+    run $nb_threads target/release/benchmarks output/speedup-$RAYON_BRANCH-$nb_threads-threads.csv
   done
 }
 
